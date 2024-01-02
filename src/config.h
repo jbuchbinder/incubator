@@ -12,10 +12,11 @@
 #define GPIO_HEATER              4              // GPIO pin controlling heater      (#1)
 #define GPIO_HEATER_FAN          16             // GPIO pin controlling heater fan  (#2)
 #define GPIO_HUMIDIFIER          17             // GPIO pin controlling humidifier  (#3)
-#define GPIO_SPARE               5              // GPIO pin controlling spare relay (#4)
+#define GPIO_PUMP                18             // GPIO pin controlling water pump  (#4)
 
 #define TEMP_INCREMENT           0.5F
 #define HUMIDITY_INCREMENT       0.5F
+#define PUMP_OFFSET_MS           500
 
 #define GPIO_BUTTON0             12             // SELECT
 #define GPIO_BUTTON1             14             // DEC

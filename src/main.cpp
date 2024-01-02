@@ -8,6 +8,7 @@
 #include "config.h"
 #include "helpers.h"
 #include "sensors.h"
+#include "sleep.h"
 #include "esp_log.h"
 
 // Initial setup for LCD screen (2004A I2C model)
@@ -35,7 +36,9 @@ float humiditySet      = 90.0F;
 float tempNow          = 0.5F; // initial value -- so far off that we know that it's not set
 float humidityNow      = 0.5F; // initial value -- so far off that we know that it's not set
 bool  heaterOn         = false;
+bool  fanOn            = false;
 bool  humidifierOn     = false;
+bool  pumpOn           = false;
 int   currentMode      = MODE_MAIN;
 bool  changingMode     = false;
 
@@ -59,6 +62,9 @@ void setup() {
 
     preferences.begin("incubator", false);
 
+    tempSet     = preferences.getDouble("temperature", tempSet    );
+    humiditySet = preferences.getDouble("humidity",    humiditySet);
+
     // Necessary for I2C displays, needs to be called first.
     Wire.begin();
 
@@ -67,9 +73,10 @@ void setup() {
     pinMode     (GPIO_HEATER,     OUTPUT);
     pinMode     (GPIO_HEATER_FAN, OUTPUT);
     pinMode     (GPIO_HUMIDIFIER, OUTPUT);
-    digitalWrite(GPIO_HEATER,     HIGH);
-    digitalWrite(GPIO_HEATER_FAN, HIGH);
-    digitalWrite(GPIO_HUMIDIFIER, HIGH);
+    digitalWrite(GPIO_HEATER,     HIGH  );
+    digitalWrite(GPIO_HEATER_FAN, HIGH  );
+    digitalWrite(GPIO_HUMIDIFIER, HIGH  );
+    digitalWrite(GPIO_PUMP,       HIGH  );
 
     ESP_LOGI("setup", "Setting up pins for buttons");
     pinMode(GPIO_BUTTON0, INPUT_PULLUP);
@@ -88,10 +95,10 @@ void setup() {
     lcd.backlight();
 
     // Define up and down arrows
-    defChar (lcd, UP_ARROW, up_arrow);
-    defChar (lcd, DOWN_ARROW, down_arrow);
+    defChar (lcd, UP_ARROW,    up_arrow   );
+    defChar (lcd, DOWN_ARROW,  down_arrow );
     defChar (lcd, HEATER_CHAR, heater_char);
-    defChar (lcd, HUMID_CHAR, humid_char);
+    defChar (lcd, HUMID_CHAR,  humid_char );
 
     // Initial display
     displayMain();
@@ -163,13 +170,17 @@ void setup() {
         if (!humidifierOn) {
           ESP_LOGI("heaterControl", "Humidifier: ON");
           humidifierOn = true;
-          digitalWrite(GPIO_HUMIDIFIER, LOW);
+          digitalWrite(     GPIO_PUMP,         LOW);
+          //delayMicroseconds(PUMP_OFFSET_MS * 1000);
+          digitalWrite(     GPIO_HUMIDIFIER,   LOW);
         }
       } else {
         if (humidifierOn) {
           ESP_LOGI("heaterControl", "Humidifier: OFF");
           humidifierOn = false;
-          digitalWrite(GPIO_HUMIDIFIER, HIGH);
+          digitalWrite(     GPIO_HUMIDIFIER,  HIGH);
+          //delayMicroseconds(PUMP_OFFSET_MS * 1000);
+          digitalWrite(     GPIO_PUMP,        HIGH);
         }
       }
     });
@@ -198,6 +209,7 @@ static void triggerButtonEvent(int buttonId) {
       switch (currentMode) {
         case MODE_MAIN:
           tempSet -= TEMP_INCREMENT;
+          preferences.putDouble("temperature", tempSet);
           break;
         case MODE_ALT:
           break;
@@ -210,6 +222,7 @@ static void triggerButtonEvent(int buttonId) {
       switch (currentMode) {
         case MODE_MAIN:
           humiditySet -= HUMIDITY_INCREMENT;
+          preferences.putDouble("humidity", humiditySet);
           break;
         case MODE_ALT:
           break;
@@ -222,6 +235,7 @@ static void triggerButtonEvent(int buttonId) {
       switch (currentMode) {
         case MODE_MAIN:
           tempSet += TEMP_INCREMENT;
+          preferences.putDouble("temperature", tempSet);
           break;
         case MODE_ALT:
           break;
@@ -234,6 +248,7 @@ static void triggerButtonEvent(int buttonId) {
       switch (currentMode) {
         case MODE_MAIN:
           humiditySet += HUMIDITY_INCREMENT;
+          preferences.putDouble("humidity", humiditySet);
           break;
         case MODE_ALT:
           break;
