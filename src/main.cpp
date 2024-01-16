@@ -10,6 +10,7 @@
 #include "sensors.h"
 #include "sleep.h"
 #include "esp_log.h"
+#include "wifi.h"
 
 // Initial setup for LCD screen (2004A I2C model)
 // For ESP32-WROOM:
@@ -184,6 +185,9 @@ void setup() {
         }
       }
     });
+
+    // Start up Wifi, absolutely last
+    wifi_connect();
 }
 
 static void triggerButtonEvent(int buttonId) {
