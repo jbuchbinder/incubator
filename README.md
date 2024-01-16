@@ -12,7 +12,6 @@ Features:
 
 Arduino Libraries:
  - [LiquidCrystalIO](https://www.arduino.cc/reference/en/libraries/liquidcrystal/)
- - [DHTesp](https://github.com/beegee-tokyo/DHTesp)
  - [DHT-Sensors-Non-Blocking](https://github.com/toannv17/DHT-Sensors-Non-Blocking)
 
 Components:
