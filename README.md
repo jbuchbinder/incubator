@@ -30,7 +30,7 @@ Components:
 
 ## Compilation
 
-To compile/install, run `pio run` with an ESP32 board plugged in. All configuration is set in `src/config.h`.
+To compile/install, run `pio run -t upload` with an ESP32 board plugged in. All configuration is set in `src/config.h`.
 
 ## Build Notes
 
@@ -38,6 +38,31 @@ _For this build to work properly, you will also need some sort of enclosure to r
 
  - Caveat: Did not include the cost of any interconnecting wires, solder, etc. Builds are builds.
  - The poles on the switch for the humidifier circuit will need to be soldered together so that the switch can be operated in an automated fashion.
+
+### Wiring
+
+* LCD SCL -> ESP32 D22
+* LCD SDA -> ESP32 D21
+* LCD VCC -> ESP32 V1N (5V)
+* LCD GND -> ESP32 GND
+
+* DHT22 OUT -> ESP32 D19
+* DHT22 + -> ESP32 3V3 (3.3V)
+* DHT22 - -> ESP32 GND
+
+* PAD 1 (TOP) -> ESP32 D25
+* PAD 2 -> ESP32 D27
+* PAD 3 -> ESP32 D26
+* PAD 4 -> ESP32 D14
+* PAD 5 -> ESP32 D20
+* PAD 6 (BOTTOM) -> ESP32 GND
+
+* RELAY GND -> ESP32 GND
+* RELAY VCC -> ESP32 V1N (5V) (should come directly from power source)
+* RELAY IN1 -> ESP32 D4
+* RELAY IN2 -> ESP32 RX2
+* RELAY IN3 -> ESP32 TX2
+* RELAY IN4 -> ESP32 D18
 
 ## TODO
 
